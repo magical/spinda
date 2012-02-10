@@ -8,6 +8,8 @@ import random
 
 # http://www.freewebs.com/gatorshark/SpindaDocumentation.htm
 
+# information pertaining to Black/White provided by codemonkey85
+
 spinda_conf = {
     'ruby': {
         'coords': [(0,0), (24,1), (6,18), (18,19)],
@@ -111,11 +113,27 @@ spinda_conf = {
              ' ******* ',
              '   ***   '],
         ]
-    }
+    },
+    'white': {
+        'size': (96, 96),
+        'origin': (23, 15),
+        'palette': {
+            'normal': [82, 173, 107, 247, 239, 189, 230, 214, 165, 206, 165, 115, 156, 132, 90, 115, 82, 66, 239, 148, 123, 239, 82, 74, 189, 74, 49, 123, 66, 49, 230, 99, 115, 255, 255, 0, 255, 247, 206, 230, 214, 165, 206, 165, 115, 16, 16, 16],
+            'shiny': [49, 165, 82, 247, 239, 189, 230, 214, 165, 206, 165, 115, 156, 132, 90, 90, 82, 74, 206, 214, 90, 165, 206, 16, 123, 156, 0, 115, 82, 58, 230, 99, 115, 255, 255, 0, 247, 239, 189, 230, 214, 165, 206, 165, 115, 16, 16, 16],
+        },
+        'transform': {2: 7, 3: 8},
+    },
 }
 
+# B/W reuses the D/P coords and spots
+spinda_conf['white']['coords'] = spinda_conf['diamond']['coords']
+spinda_conf['white']['spots'] = spinda_conf['diamond']['spots']
+
+# It wouldn't do to hit the filesystem on every request, so we'll cache
+# the image data in memory
 spinda_conf['ruby']['image'] = list(Image.open('ruby/327.png').getdata())
 spinda_conf['diamond']['image'] = list(Image.open('diamond/327.png').getdata())
+spinda_conf['white']['image'] = list(Image.open('white/327.png').getdata())
 
 def coords_from_pid(pid):
     return [
@@ -181,7 +199,7 @@ def spinda(game, pid, shiny=False):
 @app.route("/<game>/shiny/", defaults={'shiny': True})
 def randomize(game=None, shiny=None):
     if game is None:
-        game = random.choice(['ruby', 'diamond'])
+        game = random.choice(['ruby', 'diamond', 'white'])
     if shiny is None:
         shiny = random.randint(0,1)
     pid = random.randint(0, 2**32-1)
